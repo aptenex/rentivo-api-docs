@@ -1,0 +1,1162 @@
+@charset "utf-8";
+@import 'normalize';
+@import 'compass';
+@import 'variables';
+@import 'syntax';
+@import 'icon-font';
+
+/*
+Copyright 2008-2013 Concur Technologies, Inc.
+
+Licensed under the Apache License, Version 2.0 (the "License"); you may
+not use this file except in compliance with the License. You may obtain
+a copy of the License at
+
+  http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+License for the specific language governing permissions and limitations
+under the License.
+*/
+
+////////////////////////////////////////////////////////////////////////////////
+// GENERAL STUFF
+////////////////////////////////////////////////////////////////////////////////
+
+html, body {
+  color: $main-text;
+  padding: 0;
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  @extend %default-font;
+  background-color: $main-bg;
+  height: 100%;
+  -webkit-text-size-adjust: none; /* Never autoresize text */
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// TABLE OF CONTENTS
+////////////////////////////////////////////////////////////////////////////////
+
+#toc > ul > li > a > span {
+  float: right;
+  background-color: #2484FF;
+  border-radius: 40px;
+  width: 20px;
+}
+
+.tocify-wrapper {
+  transition: left 0.3s ease-in-out;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+  position: fixed;
+  z-index: 30;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: $nav-width;
+  background-color: $nav-bg;
+  border-right: 1px solid #f0f4f7;
+  box-sizing: border-box;
+
+  // github link
+  a#github {
+      margin: 4em $nav-padding 2em $nav-padding;
+      display: block;
+      font-size: .8em;
+      color: $nav-text;
+      text-decoration: none;
+      opacity: .7;
+
+      img {
+          width: 16px;
+          height: 16px;
+          position: relative;
+          top: 3px;
+          margin-right: .2em;
+      }
+
+      @media (max-width: $tablet-width) {
+          display: none;
+      }
+  }
+
+  // language selector for mobile devices
+  .lang-selector {
+      display: none;
+      a {
+          padding-top: 0.5em;
+          padding-bottom: 0.5em;
+      }
+  }
+
+  // This is the logo at the top of the ToC
+  .logo {
+      display: block;
+      padding: 0 0 15px 15px;
+      margin-top: 0em;
+
+      line-height: 38px;
+      font-size: 18px;
+
+      a {
+        line-height: 38px;
+        font-size: 18px;
+        text-decoration: none;
+        color: #f2f2f2;
+      }
+      img {
+        max-height: 38px;
+        position: relative;
+        top: 10px;
+      }
+  }
+
+  &>.search {
+    position: relative;
+
+    input {
+      background: $nav-bg;
+      border-width: 0 0 1px 0;
+      border-color: $search-box-border-color;
+      padding: 6px 0 6px 20px;
+      box-sizing: border-box;
+      margin: $nav-v-padding $nav-padding;
+      width: $nav-width - 30;
+      outline: none;
+      color: $nav-text;
+      border-radius: 0; /* ios has a default border radius */
+    }
+
+    &:before {
+      position: absolute;
+      top: 17px;
+      left: $nav-padding;
+      color: $nav-text;
+      @extend %icon-search;
+    }
+  }
+
+  img+.tocify {
+    margin-top: $logo-margin;
+  }
+
+  .search-results {
+    margin-top: 0;
+    box-sizing: border-box;
+    height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+    transition-property: height, margin;
+    transition-duration: 180ms;
+    transition-timing-function: ease-in-out;
+    &.visible {
+      height: 30%;
+      margin-bottom: 1em;
+    }
+
+    li {
+      margin: 1em $nav-padding;
+      line-height: 1;
+    }
+
+    a {
+      color: $nav-text;
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+
+
+  .tocify-item>a, .toc-footer li {
+    margin-top: 10px;
+    padding: 0 $nav-padding 0 $nav-padding;
+    display: block;
+    overflow-x: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  // The Table of Contents is composed of multiple nested
+  // unordered lists.  These styles remove the default
+  // styling of an unordered list because it is ugly.
+  ul, li {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    line-height: 28px;
+  }
+
+  li {
+    color: $nav-text;
+    transition-property: background;
+    transition-timing-function: linear;
+    transition-duration: 230ms;
+  }
+
+  // This is the currently selected ToC entry
+  .tocify-focus {
+    color: $nav-active-text;
+    font-weight: bold;
+    background: darken($rentivo-primary, 2);
+  }
+
+  // Subheaders are the submenus that slide open
+  // in the table of contents.
+  .tocify-subheader {
+    display: none; // tocify will override this when needed
+    .tocify-item>a {
+      margin-top: 0;
+      padding-left: $nav-padding + $nav-indent;
+      font-size: 13px;
+    }
+
+    &>li:last-child {
+      box-shadow: none; // otherwise it'll overflow out of the subheader
+    }
+  }
+
+  .toc-footer {
+    padding: 1em 0;
+    margin-top: 1em;
+    border-top: 1px dashed $nav-footer-border-color;
+
+    li,a {
+      color: $nav-text;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    li {
+      font-size: 0.8em;
+      line-height: 1.7;
+      text-decoration: none;
+    }
+  }
+
+}
+
+// button to show navigation on mobile devices
+#nav-button {
+  span {
+    display: block;
+    $side-pad: $main-padding / 2 - 8px;
+    padding: $side-pad $side-pad $side-pad;
+    background-color: rgba($main-bg, 0.7);
+    transform-origin: 0 0;
+    transform: rotate(-90deg) translate(-100%, 0);
+    border-radius: 0 0 0 5px;
+  }
+  padding: 0 1.5em 5em 0; // increase touch size area
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  color: #000;
+  text-decoration: none;
+  font-weight: bold;
+  opacity: 0.7;
+  line-height: 16px;
+  img {
+    height: 16px;
+    vertical-align: bottom;
+  }
+
+  transition: left 0.3s ease-in-out;
+
+  &:hover { opacity: 1; }
+  &.open {left: $nav-width}
+}
+
+
+////////////////////////////////////////////////////////////////////////////////
+// PAGE LAYOUT AND CODE SAMPLE BACKGROUND
+////////////////////////////////////////////////////////////////////////////////
+
+.page-wrapper {
+  margin-left: $nav-width;
+  position: relative;
+  z-index: 10;
+  background-color: $main-bg;
+  min-height: 100%;
+
+  padding-bottom: 1px; // prevent margin overflow
+
+  // The dark box is what gives the code samples their dark background.
+  // It sits essentially under the actual content block, which has a
+  // transparent background.
+  // I know, it's hackish, but it's the simplist way to make the left
+  // half of the content always this background color.
+  .dark-box {
+    width: $examples-width;
+    background-color: $examples-bg;
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+  }
+
+  .lang-selector {
+    visibility: hidden;
+    position: fixed;
+    z-index: 50;
+    border-bottom: 5px solid $lang-select-active-bg;
+  }
+}
+
+.lang-selector {
+  background-color: $lang-select-bg;
+  width: 100%;
+  font-weight: bold;
+  a {
+    display: block;
+    float:left;
+    color: $lang-select-text;
+    text-decoration: none;
+    padding: 0 10px;
+    line-height: 30px;
+    outline: 0;
+
+    &:active, &:focus {
+      background-color: $lang-select-pressed-bg;
+      color: $lang-select-pressed-text;
+    }
+
+    &.active {
+      background-color: $lang-select-active-bg;
+      color: $lang-select-active-text;
+    }
+  }
+
+  &:after {
+    content: '';
+    clear: both;
+    display: block;
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// CONTENT STYLES
+////////////////////////////////////////////////////////////////////////////////
+// This is all the stuff with the light background in the left half of the page
+
+.content {
+  // to place content above the dark box
+  position: relative;
+  z-index: 30;
+  padding-bottom: 50px;
+
+  &:after {
+    content: '';
+    display: block;
+    clear: both;
+  }
+
+  .hide {
+      display: none;
+  }
+
+  &>h1, &>h2, &>h3, &>h4, &>h5, &>h6, &>p, &>table, &>ul, &>ol, &>aside, &>dl {
+    margin-right: $examples-width;
+    padding: 0 $main-padding;
+    box-sizing: border-box;
+    display: block;
+
+    @extend %left-col;
+  }
+
+  &>ul, &>ol {
+    padding-left: $main-padding + 15px;
+  }
+
+  // the div is the tocify hidden div for placeholding stuff
+  &>h1, &>h2, &>div {
+    clear:both;
+  }
+
+  // slack button
+  .__slackin {
+    margin: 0 0 15px $main-padding;
+  }
+
+  h1 {
+    @extend %header-font;
+    font-size: 30px;
+    padding-top: 1em;
+    border-top: 1px solid #f0f4f7;
+    margin-top: 4em;
+    margin-bottom: 1em;
+  }
+
+  h1:first-child, div:first-child + h1 {
+    border-top-width: 0;
+    margin-top: 0;
+  }
+
+  h2 {
+    @extend %header-font;
+    font-size: 20px;
+    margin-top: 2em;
+    margin-bottom: 1em;
+  }
+
+  h3, h4, h5, h6 {
+    @extend %header-font;
+    font-size: 15px;
+    margin-top: 2.5em;
+    margin-bottom: 0.8em;
+  }
+
+  h4, h5, h6 {
+    font-size: 10px;
+  }
+
+  hr {
+    margin: 2em 0;
+    border-top: 2px solid $examples-bg;
+    border-bottom: 2px solid $main-bg;
+  }
+
+  h5 {
+      text-transform: uppercase;
+      color: #BDBDBD;
+      font-size: 13px;
+
+      + table {
+          margin-top: -0.8em;
+
+          tbody tr td:first-child {
+              text-align: right;
+              width: 40%;
+          }
+      }
+  }
+
+  table {
+    display: table;
+    margin-bottom: 1em;
+    width: 50%;
+    width: calc(50% - 28px*2);
+    margin: 0 $main-padding + $main-padding 0 $main-padding;
+
+    th,td {
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.6;
+    }
+
+    th {
+        padding: 5px 10px;
+        border-bottom: 1px solid #f0f4f7;
+        vertical-align: bottom;
+    }
+
+    td {
+        padding: 10px;
+    }
+
+    code {
+        white-space: nowrap;
+    }
+  }
+
+  a {
+      color: $link-text;
+      text-decoration: none;
+  }
+
+  .label {
+      font-size: 12px;
+      text-transform: uppercase;
+      font-weight: 400;
+      color: #9E9E9E;
+
+      &.notice {
+          color: #EF5350;
+      }
+  }
+
+  dt {
+    font-weight: bold;
+  }
+
+  dd {
+    margin-left: 15px;
+  }
+
+  p, li, dt, dd {
+    line-height: 1.6;
+    margin-top: 0;
+  }
+
+  img {
+    max-width: 100%;
+  }
+
+  code {
+    background-color: #F5F5F5;
+    padding: 3px;
+    border-radius: 3px;
+    @extend %break-words;
+    @extend %code-font;
+  }
+
+  pre>code {
+    background-color: transparent;
+    padding: 0;
+  }
+
+  aside {
+    padding-top: 1em;
+    padding-bottom: 1em;
+    margin-top: 1.5em;
+    margin-bottom: 1.5em;
+    background: $aside-notice-bg;
+    line-height: 1.6;
+
+    &.warning {
+      background-color: $aside-warning-bg;
+    }
+
+    &.success {
+      background-color: $aside-success-bg;
+    }
+
+    &.announce {
+      background-color: $aside-announce-bg;
+    }
+  }
+
+  aside:before {
+    vertical-align: middle;
+    padding-right: 0.5em;
+    font-size: 14px;
+  }
+
+  aside.notice:before {
+    @extend %icon-info-sign;
+  }
+
+  aside.warning:before {
+    @extend %icon-exclamation-sign;
+  }
+
+  aside.success:before {
+    @extend %icon-ok-sign;
+  }
+
+  aside.announce:before {
+      @extend %icon-info-sign;
+  }
+
+  .search-highlight {
+    padding: 2px;
+    margin: -2px;
+    border-radius: 4px;
+    border: 1px solid #F7E633;
+    background: linear-gradient(to top left, #F7E633 0%, #F1D32F 100%);
+  }
+}
+
+.__slackin {
+  z-index: 100;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// CODE SAMPLE STYLES
+////////////////////////////////////////////////////////////////////////////////
+// This is all the stuff that appears in the right half of the page
+
+.content {
+  pre, blockquote, .right {
+    background-color: $code-bg;
+    color: #fff;
+
+    padding: 0 $main-padding 2em;
+    margin: 0;
+    width: $examples-width;
+
+    float:right;
+    clear:right;
+
+    box-sizing: border-box;
+
+    @extend %right-col;
+
+    &>p { margin: 0; }
+
+    a {
+      color: $examples-link-text;
+    }
+
+    + pre, + blockquote, + .right {
+        padding-top: 0;
+        padding-bottom: 2em;
+    }
+  }
+
+  blockquote code {
+      background-color: lighten($code-bg, 7.5%);
+    //   color: #E0E0E0;
+  }
+
+  span.right {
+      display: block;
+  }
+
+  pre {
+    @extend %code-font;
+
+    &.highlight {
+        .gp {
+            -moz-user-select: none;
+            -webkit-user-select: none;
+            -ms-user-select: none;
+            user-select: none;
+            cursor: default;
+        }
+    }
+  }
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// RESPONSIVE DESIGN
+////////////////////////////////////////////////////////////////////////////////
+// These are the styles for phones and tablets
+// There are also a couple styles disperesed
+
+@media (max-width: $tablet-width) {
+  .tocify-wrapper {
+    left: -$nav-width;
+
+    &.open {
+      left: 0;
+    }
+  }
+
+  .page-wrapper {
+    margin-left: 0;
+  }
+
+  #nav-button {
+    display: block;
+  }
+
+  .tocify-wrapper .tocify-item > a {
+    padding-top: 0.3em;
+    padding-bottom: 0.3em;
+  }
+}
+
+@media (max-width: $phone-width) {
+  .dark-box {
+    display: none;
+  }
+
+  %left-col {
+    margin-right: 0;
+  }
+
+  .tocify-wrapper .lang-selector {
+    display: none;
+  }
+
+  .page-wrapper .lang-selector {
+    display: none;
+  }
+
+  %right-col {
+    width: auto;
+    float: none;
+  }
+
+  %right-col + %left-col {
+    margin-top: $main-padding;
+  }
+
+    .content {
+        table {
+            width: 100%;
+            width: calc(100% - 28px*2);
+        }
+
+        blockquote, pre, .right {
+            padding-top: 2em;
+        }
+    }
+}
+
+
+
+.opwrapper {
+  margin-right: 50%;
+  padding: 0 28px;
+}
+
+.opblock {
+  margin: 0 0 15px;
+  border: 1px solid #000;
+  border-radius: 4px;
+  box-shadow: 0 0 3px rgba(0, 0, 0, .19)
+}
+
+.opblock .tab-header {
+  display: flex;
+  flex: 1
+}
+
+.opblock .tab-header .tab-item {
+  padding: 0 40px;
+  cursor: pointer
+}
+
+.opblock .tab-header .tab-item:first-of-type {
+  padding: 0 40px 0 0
+}
+
+.opblock .tab-header .tab-item.active h4 span {
+  position: relative
+}
+
+.opblock .tab-header .tab-item.active h4 span:after {
+  position: absolute;
+  bottom: -15px;
+  left: 50%;
+  width: 120%;
+  height: 4px;
+  content: "";
+  -webkit-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background: grey
+}
+
+.opblock.is-open .opblock-summary {
+  border-bottom: 1px solid #000
+}
+
+.opblock .opblock-section-header {
+  display: flex;
+  align-items: center;
+  padding: 8px 20px;
+  min-height: 50px;
+  background: hsla(0, 0%, 100%, .8);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .1)
+}
+
+.opblock .opblock-section-header>label {
+  font-size: 12px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  margin: 0 0 0 auto;
+  font-family: sans-serif;
+  color: #3b4151
+}
+
+.opblock .opblock-section-header>label>span {
+  padding: 0 10px 0 0
+}
+
+.opblock .opblock-section-header h4 {
+  font-size: 14px;
+  flex: 1;
+  margin: 0;
+  font-family: sans-serif;
+  color: #3b4151
+}
+
+.opblock .opblock-summary-method {
+  font-size: 14px;
+  font-weight: 700;
+  min-width: 80px;
+  padding: 6px 15px;
+  text-align: center;
+  border-radius: 3px;
+  background: #000;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, .1);
+  font-family: sans-serif;
+  color: #fff
+}
+
+.opblock .opblock-summary-operation-id,
+.opblock .opblock-summary-path,
+.opblock .opblock-summary-path__deprecated {
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  word-break: break-word;
+  padding: 0 10px;
+  font-family: monospace;
+  font-weight: 600;
+  color: #3b4151
+}
+
+@media (max-width:768px) {
+  .opblock .opblock-summary-operation-id,
+  .opblock .opblock-summary-path,
+  .opblock .opblock-summary-path__deprecated {
+    font-size: 12px
+  }
+}
+
+.opblock .opblock-summary-path__deprecated {
+  text-decoration: line-through
+}
+
+.opblock .opblock-summary-operation-id {
+  font-size: 14px
+}
+
+.opblock .opblock-summary-description {
+  font-size: 13px;
+  flex: 1 1 auto;
+  word-break: break-word;
+  font-family: sans-serif;
+  color: #3b4151
+}
+
+.opblock .opblock-summary {
+  display: flex;
+  align-items: center;
+  padding: 5px;
+  cursor: pointer
+}
+
+.opblock .opblock-summary .view-line-link {
+  position: relative;
+  top: 2px;
+  width: 0;
+  margin: 0;
+  cursor: pointer;
+  transition: all .5s
+}
+
+.opblock .opblock-summary:hover .view-line-link {
+  width: 18px;
+  margin: 0 5px
+}
+
+.opblock.opblock-post {
+  border-color: #49cc90;
+  background: rgba(73, 204, 144, .1)
+}
+
+.opblock.opblock-post .opblock-summary-method {
+  background: #49cc90
+}
+
+.opblock.opblock-post .opblock-summary {
+  border-color: #49cc90
+}
+
+.opblock.opblock-post .tab-header .tab-item.active h4 span:after {
+  background: #49cc90
+}
+
+.opblock.opblock-put {
+  border-color: #fca130;
+  background: rgba(252, 161, 48, .1)
+}
+
+.opblock.opblock-put .opblock-summary-method {
+  background: #fca130
+}
+
+.opblock.opblock-put .opblock-summary {
+  border-color: #fca130
+}
+
+.opblock.opblock-put .tab-header .tab-item.active h4 span:after {
+  background: #fca130
+}
+
+.opblock.opblock-delete {
+  border-color: #f93e3e;
+  background: rgba(249, 62, 62, .1)
+}
+
+.opblock.opblock-delete .opblock-summary-method {
+  background: #f93e3e
+}
+
+.opblock.opblock-delete .opblock-summary {
+  border-color: #f93e3e
+}
+
+.opblock.opblock-delete .tab-header .tab-item.active h4 span:after {
+  background: #f93e3e
+}
+
+.opblock.opblock-get {
+  border-color: #61affe;
+  background: rgba(97, 175, 254, .1)
+}
+
+.opblock.opblock-get .opblock-summary-method {
+  background: #61affe
+}
+
+.opblock.opblock-get .opblock-summary {
+  border-color: #61affe
+}
+
+.opblock.opblock-get .tab-header .tab-item.active h4 span:after {
+  background: #61affe
+}
+
+.opblock.opblock-patch {
+  border-color: #50e3c2;
+  background: rgba(80, 227, 194, .1)
+}
+
+.opblock.opblock-patch .opblock-summary-method {
+  background: #50e3c2
+}
+
+.opblock.opblock-patch .opblock-summary {
+  border-color: #50e3c2
+}
+
+.opblock.opblock-patch .tab-header .tab-item.active h4 span:after {
+  background: #50e3c2
+}
+
+.opblock.opblock-head {
+  border-color: #9012fe;
+  background: rgba(144, 18, 254, .1)
+}
+
+.opblock.opblock-head .opblock-summary-method {
+  background: #9012fe
+}
+
+.opblock.opblock-head .opblock-summary {
+  border-color: #9012fe
+}
+
+.opblock.opblock-head .tab-header .tab-item.active h4 span:after {
+  background: #9012fe
+}
+
+.opblock.opblock-options {
+  border-color: #0d5aa7;
+  background: rgba(13, 90, 167, .1)
+}
+
+.opblock.opblock-options .opblock-summary-method {
+  background: #0d5aa7
+}
+
+.opblock.opblock-options .opblock-summary {
+  border-color: #0d5aa7
+}
+
+.opblock.opblock-options .tab-header .tab-item.active h4 span:after {
+  background: #0d5aa7
+}
+
+.opblock.opblock-deprecated {
+  opacity: .6;
+  border-color: #ebebeb;
+  background: hsla(0, 0%, 92.2%, .1)
+}
+
+.opblock.opblock-deprecated .opblock-summary-method {
+  background: #ebebeb
+}
+
+.opblock.opblock-deprecated .opblock-summary {
+  border-color: #ebebeb
+}
+
+.opblock.opblock-deprecated .tab-header .tab-item.active h4 span:after {
+  background: #ebebeb
+}
+
+.opblock .opblock-schemes {
+  padding: 8px 20px
+}
+
+.opblock .opblock-schemes .schemes-title {
+  padding: 0 10px 0 0
+}
+
+
+ .auth-btn-wrapper {
+  display: flex;
+  padding: 10px 0;
+  justify-content: center
+}
+
+ .auth-btn-wrapper .btn-done {
+  margin-right: 1em
+}
+
+ .auth-wrapper {
+  display: flex;
+  flex: 1;
+  justify-content: flex-end
+}
+
+ .auth-wrapper .authorize {
+  padding-right: 20px;
+  margin-right: 10px
+}
+
+ .auth-container {
+  margin: 0 0 10px;
+  padding: 10px 20px;
+  border-bottom: 1px solid #ebebeb
+}
+
+ .auth-container:last-of-type {
+  margin: 0;
+  padding: 10px 20px;
+  border: 0
+}
+
+ .auth-container h4 {
+  margin: 5px 0 15px!important
+}
+
+ .auth-container .wrapper {
+  margin: 0;
+  padding: 0
+}
+
+
+ .btn {
+  font-size: 14px;
+  font-weight: 700;
+  padding: 5px 23px;
+  transition: all .3s;
+  border: 2px solid grey;
+  border-radius: 4px;
+  background: transparent;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, .1);
+  font-family: sans-serif;
+  color: #3b4151
+}
+
+ .btn.btn-sm {
+  font-size: 12px;
+  padding: 4px 23px
+}
+
+ .btn[disabled] {
+  cursor: not-allowed;
+  opacity: .3
+}
+
+ .btn:hover {
+  box-shadow: 0 0 5px rgba(0, 0, 0, .3)
+}
+
+ .btn.cancel {
+  border-color: #ff6060;
+  background-color: transparent;
+  font-family: sans-serif;
+  color: #ff6060
+}
+
+ .btn.authorize {
+  line-height: 1;
+  display: inline;
+  color: #49cc90;
+  border-color: #49cc90;
+  background-color: transparent
+}
+
+ .btn.authorize span {
+  float: left;
+  padding: 4px 2px 5px 4px;
+}
+
+ .btn.authorize svg {
+  fill: #49cc90
+}
+
+ .btn.execute {
+  background-color: #4990e2;
+  color: #fff;
+  border-color: #4990e2
+}
+
+ .btn-group {
+  display: flex;
+  padding: 30px
+}
+
+ .btn-group .btn {
+  flex: 1
+}
+
+ .btn-group .btn:first-child {
+  border-radius: 4px 0 0 4px
+}
+
+ .btn-group .btn:last-child {
+  border-radius: 0 4px 4px 0
+}
+
+ .authorization__btn {
+  padding: 0 10px;
+  border: none;
+  background: none
+}
+
+ .authorization__btn.locked {
+  opacity: 1
+}
+
+ .authorization__btn.unlocked {
+  opacity: .4
+}
+
+ .expand-methods,
+ .expand-operation {
+  border: none;
+  background: none
+}
+
+ .expand-methods svg,
+ .expand-operation svg {
+  width: 20px;
+  height: 20px
+}
+
+ .expand-methods {
+  padding: 0 10px
+}
+
+ .expand-methods:hover svg {
+  fill: #404040
+}
+
+ .expand-methods svg {
+  transition: all .3s;
+  fill: #707070
+}
+
+ button {
+  cursor: pointer;
+  outline: none
+}
+
+ button.invalid {
+  -webkit-animation: shake .4s 1;
+  animation: shake .4s 1;
+  border-color: #f93e3e;
+  background: #feebeb
+}
