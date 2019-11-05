@@ -4,9 +4,6 @@ title: Rentivo API Reference
 language_tabs:
   - shell
 
-includes:
-
-
 search: false
 ---
 
